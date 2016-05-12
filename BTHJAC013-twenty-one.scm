@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;      CS 3 Scheme programming assignment               ;;;;
 ;;;;                 April 2016                            ;;;;
-;;;;        <joe blogg's> solutions <stdnum000>            ;;;;
+;;;;      Jacques Botha's solutions BTHJAC013              ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  
 ;; This depends on "cs3-black-jack.scm"

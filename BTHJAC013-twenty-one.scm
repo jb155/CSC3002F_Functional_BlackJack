@@ -25,16 +25,11 @@
 ;;	- input: '((A c) (A d) (A h) (A s)) output: 14
 ;;
 ;; Algorithm:
-;;	- there can be at most four aces in a hand, limited by the number of suits
-;;	- there can be at most one ace worth eleven points, as having two aces
-;;	  both worth eleven points would result in the player losing the game
-;;	- the difference between the worth of a hand when an ace is worth one and 
-;;	  when an ace is worth eleven is ten points
-;;	- therefore initially calculate the total score when the ace is worth one
-;;	  and see if by adding ten (i.e., making one of the aces worth eleven 
-;;	  instead) the score is not yet greater than 21
-;;	- if the result is in favour of eleven, return that result, otherwise
-;;	  return the initial result
+;;	- Max 4 Aces in  hand. (ie one per suit)
+;;	- Max one Ace = 11, as 2xAce==2x11=22 > 21. Meaning the player will lose.
+;;	- Worth diff between base ace and 11 ace is 10.
+;;	- Do base calculation with base Ace, add 10 afterwards to see if it wont be > 21.
+;;	- If it's not >21 set Ace as 11.
 
 (define (best-hand hand)
    (if (<= (aces-eleven hand) 21) (aces-eleven hand) (min-val hand)))
@@ -44,8 +39,16 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;  Question 2.  "stop-at"
-;; [add description and test -cases]
-
+;; Stops the specified hand count
+;; Test-cases:
+;;	- 
+;; Algorithm:
+;;	- get given a traget 'trgt'
+;;	- take a card if the current hand value is below trgt
+(define (stop-at trgt)
+   (lambda (trgt)
+	(lambda (customer-hand-so-far dealer-up-card)
+		(< (best-hand customer-hand-so-far) trgt))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;  Question 3.  "repeat-game"

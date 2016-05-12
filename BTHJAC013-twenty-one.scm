@@ -18,6 +18,7 @@
 ;; Check if current hand has the nearest value to 21 as possible, if it has an Ace in it hand, see if 
 ;; bieng a one or eleven produces a more desireable result.
 ;; Determine whether the hand thus far should consider its aces as ones or elevens
+;;
 ;; Test-cases: 
 ;;	- input: '((7 s) (A d) (3 h)) output: 21
 ;;	- input: '((7 s) (A d) (3 h) (5 s)) output: 16
@@ -63,13 +64,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;  Question 2.  "stop-at"
 ;; Card is taken only if the best total thus far is less than n
+;;
 ;; Test-cases:
-;;	- 
+;;	- Input: ((stop-at 15) '((3 d) (A s)) '(5 d))			Output: #t
+;;  - False: ((stop-at 15) '((5 d) (Q s)) '(5 d))			Output: #f
 ;; Algorithm:
 ;;	- get given a traget 'trgt'
 ;;	- take a card if the current hand value is below trgt
 (define (stop-at trgt)
-	(lambda(hand)
+	(lambda(hand dealer-up-card)
 		(if (< (best-hand hand) trgt)
 			#t	;;best-hand is less than trgt
 			#f	;;best-hand is larger than trgt
@@ -84,32 +87,39 @@
 ;; of games won minus the number of games lost (draws don’t count either way).
 ;;
 ;; Test-cases:
-;;	- input " strategy n"
+;;	- Input: (stop-at 15) 100
+;;  - Input: stop-at-17 10
+;;	- Input: stupid 100
 ;; Algorithm:
 ;;	- Given a strategy
 ;;	- Given a value n
-;;	- 
+;;	- starts at 0, recursively goes through till end of iterations
+;;	- returns score
 (define (repeat-game strategy n)
 	(count-win-loss strategy n 0 0)
 )
 
 (define (count-win-loss strategy n curr-n totScore)
 	(if(equal? n curr-n)	;;Draw: dont count
-		score
-		(count-win-loss n (+ 1 curr-n) (+ totScore (black-jack strategy)))
+		totScore
+		(count-win-loss strategy n (+ 1 curr-n) (+ totScore (black-jack strategy)))
 	)	
 )
-	
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Question 4.    clever
 ;; Takes into account both the player’s current total and what
 ;; the dealer’s up card is.
+;;
 ;; Test-cases:
-;;	- 
+;;	- Input: black-jack clever
+;;	- Input: repeat-game clever 500
 ;; Algorithm:
-;;	- 
-;;	- 
-;;	- 
+;;	- If the player has 11 or less you always take a hit.
+;;	- If it is 17 or higher you always stand.
+;;  - If the player has 12 you stand iff the dealer’s up card is 4, 5 or 6, otherwise hit.
+;;	- If the player has ≥13 and ≤16 then take a hit iff the dealer has an ace or any card of value 7 or
+;;	  higher showing, otherwise stand.
 
 (define (clever hand dealer-up-card)
 	(cond ((and (<= (best-hand hand) 16) 
@@ -127,15 +137,23 @@
 ;; result. This resulting strategy decides whether or not to “hit” by checking the three argument
 ;; strategies, and going with the majority. That is, the result strategy should return #t if and only if at
 ;; least two of the three argument strategies return #t.
-(define (majority-help strategy hand dealer-card)
+;;
+;; Test-cases:
+;; - Input: (majority stop-at-17 (stop-at 12) clever) 1000
+;; Algorithm:
+;; - Split the 3 funt
+;; - Have them decide on hit/not
+;; - Decide on the majority
+
+(define (majority-function strategy hand dealer-card)
   (if (strategy hand dealer-card) 1 
       0))
 
 (define (majority strat-1 strat-2 strat-3)
      (lambda (hand dealer-card) 
-     (> (+ (majority-help strat-1 hand dealer-card)
-           (majority-help strat-2 hand dealer-card)
-           (majority-help strat-3 hand dealer-card)) 
+     (> (+ (majority-function strat-1 hand dealer-card)
+           (majority-function strat-2 hand dealer-card)
+           (majority-function strat-3 hand dealer-card)) 
         1)
 		)
 )
@@ -147,11 +165,14 @@
 ;; takes three arguments, a strategy, a repeat‐count for each data point and a count of how
 ;; many data‐points there should be in the list it creates.
 ;; Test-cases:
-;;	- 
+;;	- Input: clever 100 3	Output: (-18 8 -19)
+;; 	- Input: get-stats (stop-at 18) 1000 10		Output: (-68 -151 -94 -109 -99 -112 -140 -133 -147 -113)
+;;  - Input: clever 100 10		Output: (-18 8 -19 3 12 -7 -13 -6 -8 13)
 ;; Algorithm:
-;;	- 
-;;	- 
-;;	- 
+;;	- Repeats a strat 0 -> n times
+;;	- If player wins +1	score
+;;	- Loss -1 to score
+;;	- Tie does nothing
 
 (define (get-stats strategy repeat-count data-points)
 	(get-stats-process strategy repeat-count data-points 0 '())
